@@ -19,9 +19,9 @@
 
 ## این چیست؟
 
-سابی یک **مرورگر ابری اشتراکی** است: آدرس یک سایت را می‌دهی، یک تب واقعی روی لبهٔ Cloudflare باز می‌شود و یک **لینک نشست** می‌گیری. آن لینک را روی هر دستگاه دیگری باز کنی، **همان تب** را زنده می‌بینی و کنترل می‌کنی — کلیک، تایپ، اسکرول. نه حساب کاربری، نه ایمیل، نه رمز.
+صابی یک **مرورگر ابری اشتراکی** است: آدرس یک سایت را می‌دهی، یک تب واقعی روی لبهٔ Cloudflare باز می‌شود و یک **لینک نشست** می‌گیری. آن لینک را روی هر دستگاه دیگری باز کنی، **همان تب** را زنده می‌بینی و کنترل می‌کنی — کلیک، تایپ، اسکرول. نه حساب کاربری، نه ایمیل، نه رمز.
 
-موتور رندر، [Cloudflare Kitesurf](https://github.com/cloudflare/kitesurf) رسمی و دست‌نخورده است که خصوصی و پشت Cloudflare Access نگه داشته شده؛ سابی فقط یک لایهٔ اشتراک امن روی آن است.
+موتور رندر، [Cloudflare Kitesurf](https://github.com/cloudflare/kitesurf) رسمی و دست‌نخورده است که خصوصی و پشت Cloudflare Access نگه داشته شده؛ صابی فقط یک لایهٔ اشتراک امن روی آن است.
 
 ## ✨ امکانات
 
@@ -76,6 +76,16 @@ flowchart LR
 | `/api/extend` | POST (same-origin) | Bearer (کنترل) | +۵ دقیقه تا سقف ۳۰ دقیقه |
 | `/api/close` | POST (same-origin) | Bearer (کنترل) | پایان نشست برای همه |
 
+## 🧭 سه گزینه
+
+| گزینه | آدرس | چیست |
+|---|---|---|
+| **Sabi Browser** | [sabi-browser.nikanesalamat.ir](https://sabi-browser.nikanesalamat.ir) | تب ابری اشتراکی روی Cloudflare (همین مخزن، پوشهٔ `app/`) |
+| **مرورگر مجازی** | [sabi-virtual.nikanesalamat.ir](https://sabi-virtual.nikanesalamat.ir) | Chromium واقعی روی AWS Lightsail (آمریکا، Ohio) با تب‌ها، بازرس، چسباندن/کپی متن و نشانگر IP — پوشهٔ [`aws-virtual/`](aws-virtual/README.md) |
+| **فایرفاکس** | [firefox.nikanesalamat.ir](https://firefox.nikanesalamat.ir) | فایرفاکس کامل و به‌روز با دسکتاپ وب، نصب افزونه، پروفایل دائمی، پشت رمز و دکمهٔ ری‌استارت — پوشهٔ [`firefox/`](firefox/README.md) |
+
+هر سه روی IPv4 و IPv6 در دسترس‌اند. جزئیات سرورها، دستورهای عملیاتی و محدودیت‌ها در [docs/INFRASTRUCTURE.md](docs/INFRASTRUCTURE.md) است.
+
 ## 🚀 استقرار
 
 راهنمای کامل و گام‌به‌گام در [docs/REBUILD.md](docs/REBUILD.md) — از صفر تا دقیقاً همین استقرار، با همهٔ تنظیمات، ثابت‌ها و چک‌لیست راستی‌آزمایی.
@@ -101,6 +111,7 @@ python3 smoke.py https://your-domain.example  # آزمون زنده
 - `engine/` — config to run upstream Kitesurf privately behind Cloudflare Access (`wrangler.jsonc`, Access JWT wrapper, pinned image digests in `IMAGE.json`/`SOURCE.md`).
 - Security: engine never exposed; capability tokens hashed server-side; separate one-way-derived **view-only** tokens; same-origin checks; per-IP and global quotas; 12-min sessions extendable to 30.
 - Rebuild everything from scratch with [docs/REBUILD.md](docs/REBUILD.md).
+- Two sibling editions live in this repo: `aws-virtual/` (a real Chromium on AWS Lightsail in the US, with clipboard paste/copy and an IP badge) and `firefox/` (a full, auto-updating Firefox desktop with add-on support, password-gated, with a restart button). See [docs/INFRASTRUCTURE.md](docs/INFRASTRUCTURE.md). All three are reachable over IPv4 and IPv6.
 
 Built with the official engine — credits to Cloudflare. UI font-free, framework-free, a single HTML file. QR codes generated fully client-side ([qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator), MIT).
 
