@@ -1,0 +1,14 @@
+[Unit]
+Description=Sabi Firefox login gate
+After=network.target
+[Service]
+User=sabifx
+WorkingDirectory=/opt/sabi-fx
+ExecStart=/usr/bin/python3 -B /opt/sabi-fx/auth.py
+Restart=always
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+[Install]
+WantedBy=multi-user.target

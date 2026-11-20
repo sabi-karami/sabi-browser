@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""Sabi Firefox gate: Persian login page + signed-cookie verification for Caddy forward_auth."""
+import base64, hashlib, hmac, html, json, os, secrets, time, threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs
+
+BASE = os.environ.get("SABI_FX_DIR", "/opt/sabi-fx")
+CONF = os.path.join(BASE, "auth.json")
+COOKIE = "sabi_fx"
+TTL = 7 * 24 * 3600
+MAX_FAILS, WINDOW = 5, 600
+fails, lock = {}, threading.Lock()
+
+def conf():
+    with open(CONF) as f: return json.load(f)
+
+def check_password(pw, c):
+    h = hashlib.scrypt(pw.encode(), salt=bytes.fromhex(c["salt"]), n=2**14, r=8, p=1, dklen=32)
+    return hmac.compare_digest(h.hex(), c["hash"])
+
+def sign(exp, c):
+    key = bytes.fromhex(c["secret"]) + bytes.fromhex(c["hash"])
+    return hmac.new(key, str(exp).encode(), hashlib.sha256).hexdigest()
+
+def valid_cookie(header):
+    try:
+        for part in (header or "").split(";"):
+            k, _, v = part.strip().partition("=")
+            if k == COOKIE:
+                exp, _, sig = v.partition(".")
+                if int(exp) > time.time() and hmac.compare_digest(sig, sign(int(exp), conf())):
+                    return True
+    except Exception:
+        pass
+    return False
+
+FONT = open(os.path.join(BASE, "vazirmatn.woff2"), "rb").read()
+PAGE = open(os.path.join(BASE, "login.html"), encoding="utf-8").read()
+
+class H(BaseHTTPRequestHandler):
+    server_version = "sabi-gate"
+    sys_version = ""
+    def log_message(self, *a): pass
+    def ip(self):
+        return (self.headers.get("X-Forwarded-For") or self.client_address[0]).split(",")[0].strip()
+    def send(self, code, body=b"", ctype="text/html; charset=utf-8", extra=()):
+        self.send_response(code)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        for k, v in extra: self.send_header(k, v)
+        self.end_headers()
+        if self.command != "HEAD": self.wfile.write(body)
+    def page(self, code=200, error=""):
+        err = f'<p class="err" role="alert">{html.escape(error)}</p>' if error else ""
+        body = PAGE.replace("<!--ERR-->", err).encode()
+        self.send(code, body, extra=[
+            ("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'"),
+            ("X-Frame-Options", "DENY"), ("X-Content-Type-Options", "nosniff"), ("Referrer-Policy", "no-referrer"),
+            ("Strict-Transport-Security", "max-age=31536000")])
+    def do_HEAD(self): self.do_GET()
+    def do_GET(self):
+        p = self.path.split("?")[0]
+        if p == "/__sabi/verify":
+            if valid_cookie(self.headers.get("Cookie")): return self.send(204)
+            return self.send(302, b"", extra=[("Location", "/__sabi/login")])
+        if p == "/__sabi/login": return self.page()
+        if p == "/__sabi/vazirmatn.woff2":
+            return self.send(200, FONT, "font/woff2", [("Cache-Control", "public, max-age=31536000, immutable")])
+        if p == "/__sabi/logout":
+            return self.send(302, b"", extra=[("Location", "/__sabi/login"),
+                ("Set-Cookie", f"{COOKIE}=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Lax")])
+        self.send(404, b"not found", "text/plain")
+    def do_POST(self):
+        if self.path.split("?")[0] != "/__sabi/login": return self.send(404, b"not found", "text/plain")
+        n = min(int(self.headers.get("Content-Length") or 0), 2048)
+        pw = (parse_qs(self.rfile.read(n).decode(errors="ignore")).get("password") or [""])[0]
+        ip, now = self.ip(), time.time()
+        with lock:
+            for k in list(fails):
+                fails[k] = [t for t in fails[k] if now - t < WINDOW]
+                if not fails[k]: del fails[k]
+            total = sum(len(v) for v in fails.values())
+            if len(fails.get(ip, [])) >= MAX_FAILS or total >= 40:
+                return self.page(429, "تعداد تلاش‌های ناموفق زیاد بود. چند دقیقه بعد دوباره امتحان کنید.")
+        c = conf()
+        if check_password(pw, c):
+            with lock: fails.pop(ip, None)
+            exp = int(now + TTL)
+            return self.send(303, b"", extra=[("Location", "/"),
+                ("Set-Cookie", f"{COOKIE}={exp}.{sign(exp, c)}; Max-Age={TTL}; Path=/; Secure; HttpOnly; SameSite=Lax")])
+        with lock: fails.setdefault(ip, []).append(now)
+        time.sleep(0.6)
+        self.page(401, "رمز عبور درست نیست.")
+
+if __name__ == "__main__":
+    ThreadingHTTPServer(("127.0.0.1", 9100), H).serve_forever()

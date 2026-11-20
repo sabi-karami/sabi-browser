@@ -1,0 +1,19 @@
+{
+  admin off
+}
+firefox.nikanesalamat.ir {
+  encode zstd gzip
+  header Strict-Transport-Security "max-age=31536000"
+  @gate path /__sabi/*
+  handle @gate {
+    reverse_proxy 127.0.0.1:9100
+  }
+  handle {
+    forward_auth 127.0.0.1:9100 {
+      uri /__sabi/verify
+    }
+    reverse_proxy 172.29.64.2:3000 {
+      flush_interval -1
+    }
+  }
+}
