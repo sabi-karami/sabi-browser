@@ -51,3 +51,26 @@ Deployed to `kitesurf-shared` (etag `8cf772f5c4a5…`), live-verified with 10 ch
 - App now served at https://sabi-browser.nikanesalamat.ir/ (worker domain id `205f60d6beb601680b7c416a31bf71f351dca4a8`); `HOST` constant updated and redeployed (etag `f77afdac5db1…`), smoke-tested on the new origin.
 - Old hostname `kitesurf-live.nikanesalamat.ir` fully removed (workers custom domain + DNS); confirmed dead.
 - Engine hostname `kitesurf.nikanesalamat.ir` kept: it is in use as the owner-only, Access-protected DevTools entry and is documented in the repo.
+
+## Virtual browser and Firefox editions (2026-11-20)
+
+### Virtual browser (Chromium on AWS Lightsail)
+- AWS account `954903081714`, Lightsail instance `sabi-virtual` (us-east-2a, `small_3_0`, Ubuntu 24.04), static IP `77.113.7.210` (IPinfo: Columbus, Ohio, US). IMDS disabled; public ports 80/443 only; SSH is opened briefly for maintenance and closed again.
+- Docker compose (`browser` + `egress` proxy) behind Caddy (Let's Encrypt). Host fixes: `kernel.apparmor_restrict_unprivileged_userns=0` (persisted), seccomp profile allows `chroot` unconditionally.
+- Smoke test and security probes passed (http://, metadata IP, private IP, own domain rejected).
+- Clipboard: `kind:'paste'` action (≤16000 chars), controller-only `POST /api/copy`; verified Persian round trip. US presentation: context `locale en-US`, `timezoneId America/New_York`, `GET /api/where`, header IP badge and an `ipinfo.io` chip. The HeadlessChrome user agent is intentionally untouched.
+
+### Firefox edition
+- Instance `sabi-firefox` (us-east-2a, `small_3_0` + 2 GB swap; `medium_3_0` was refused by the account), static IP `18.218.68.2`, DNS `firefox.nikanesalamat.ir` (A + AAAA, unproxied).
+- Image `linuxserver/firefox:latest` (Selkies web desktop) + `policies.json`; Firefox 160.0.1 at deploy time. uBlock Origin pre-installed (removable); any AMO add-on installable; persistent profile in volume `fx-config`.
+- Hardened container (custom seccomp, caps dropped, no-new-privileges, limits), dedicated bridge `sabi-fx`, egress allowed only to the public internet (80/443, DNS to 1.1.1.1/8.8.8.8); private ranges, metadata and the host itself blocked.
+- Persian login gate (`auth.py`): scrypt hash, signed HttpOnly cookie, rate limiting; self-service password change at `/__sabi/password`; floating restart button injected into the page (`ui.js`) which makes a root-side path unit run `docker restart`.
+- Weekly updater timer (Mon 04:30 UTC) pulls the newest image and recreates the container if it changed.
+- Main site header now links to both editions.
+
+### IPv6
+- Lightsail instances are dual-stack; AAAA records added for `sabi-virtual` and `firefox`; the main site already had IPv6 through Cloudflare. Container egress stays IPv4-only so the US IP presentation is unchanged.
+
+### Brand spelling
+- The Persian spelling is «صابی»; corrected in the UI, the Firefox pages and the docs.
+
