@@ -1,0 +1,9 @@
+{
+  admin off
+}
+sabi-virtual.nikanesalamat.ir {
+  header Strict-Transport-Security "max-age=31536000"
+  reverse_proxy 172.29.63.2:8080 {
+    header_up X-Sabi-Client-IP {remote_host}
+  }
+}
