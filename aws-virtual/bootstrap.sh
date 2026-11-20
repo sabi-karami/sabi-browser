@@ -5,6 +5,10 @@ export DEBIAN_FRONTEND=noninteractive
 install -d -m 0755 /etc/apt/keyrings /opt/sabi
 apt-get update -qq
 apt-get install -y -qq ca-certificates curl iptables caddy
+# Ubuntu 24.04 restricts unprivileged user namespaces via AppArmor, which breaks the
+# Chromium namespace sandbox (zygote chroot). Relax only this restriction, persistently.
+printf 'kernel.apparmor_restrict_unprivileged_userns=0\n' > /etc/sysctl.d/99-sabi-chromium.conf
+sysctl -p /etc/sysctl.d/99-sabi-chromium.conf
 systemctl disable --now caddy
 curl -fsSL --retry 3 https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 chmod a+r /etc/apt/keyrings/docker.asc
