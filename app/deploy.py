@@ -20,6 +20,7 @@ if "--first-time" in sys.argv:
     meta["migrations"] = [{"tag": "shared-tab-v1", "new_sqlite_classes": ["SharedTab"]}]
 
 ui = open("ui.html", "rb").read()
+font = open("vazirmatn.woff2", "rb").read()
 wk = open("worker.mjs", "rb").read()
 boundary = uuid.uuid4().hex
 
@@ -32,6 +33,7 @@ body = b"".join([
     part("metadata", "metadata.json", "application/json", json.dumps(meta).encode()),
     part("worker.mjs", "worker.mjs", "application/javascript+module", wk),
     part("ui.html", "ui.html", "text/plain", ui),
+    part("vazirmatn.woff2", "vazirmatn.woff2", "application/octet-stream", font),
 ]) + f"--{boundary}--\r\n".encode()
 
 req = urllib.request.Request(
