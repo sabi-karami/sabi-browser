@@ -9,7 +9,7 @@ const ORIGIN='https://sabi-virtual.nikanesalamat.ir', HOST=new URL(ORIGIN).hostn
 const LIFE=720000, EXTEND=300000, MAX=1800000, WIDTH=1280, HEIGHT=720;
 const sessions=new Map(), keys=new Map(), starts=[];let launching=false;
 const sha=s=>createHash('sha256').update(s).digest('hex');
-const ui=readFileSync(new URL('./ui.html',import.meta.url)), font=readFileSync(new URL('./vazirmatn.woff2',import.meta.url));
+const ui=readFileSync(new URL('./ui.html',import.meta.url)), font=readFileSync(new URL('./vazirmatn.woff2',import.meta.url)), aref=readFileSync(new URL('./aref-ruqaa.woff2',import.meta.url));
 const headers={'cache-control':'no-store','referrer-policy':'no-referrer','x-content-type-options':'nosniff'};
 const send=(r,status,data,h={})=>{if(r.headersSent||r.destroyed)return;r.writeHead(status,{...headers,...h});r.end(data);};
 const json=(r,status,o)=>send(r,status,JSON.stringify(o),{'content-type':'application/json; charset=utf-8'});
@@ -116,6 +116,7 @@ const server=createServer({requestTimeout:10000,headersTimeout:8000,maxHeaderSiz
   if(m==='GET'&&p==='/health')return json(res,200,{ok:true,engine:'chromium'});
   if(m==='GET'&&(p==='/'||p.startsWith('/?')))return send(res,200,ui,{'content-type':'text/html; charset=utf-8','x-frame-options':'DENY','permissions-policy':'camera=(), microphone=(), geolocation=(), payment=(), usb=(), display-capture=()','content-security-policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; font-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"});
   if(m==='GET'&&p==='/fonts/vazirmatn.woff2')return send(res,200,font,{'content-type':'font/woff2','cache-control':'public, max-age=31536000, immutable'});
+  if(m==='GET'&&p==='/fonts/aref-ruqaa.woff2')return send(res,200,aref,{'content-type':'font/woff2','cache-control':'public, max-age=31536000, immutable'});
   if(!['/api/start','/api/frame','/api/action','/api/close','/api/extend','/api/inspect','/api/where','/api/copy'].includes(p))return send(res,404,'Not found');
   if((p==='/api/frame'||p==='/api/inspect'||p==='/api/where')?m!=='GET':m!=='POST'||req.headers.origin!==ORIGIN||!['same-origin',undefined].includes(req.headers['sec-fetch-site']))return error(res,403,'درخواست مجاز نیست.');
   if(p==='/api/where'){const w=await currentWhere().catch(()=>null);return w?json(res,200,w):error(res,503,'موقعیت در دسترس نیست.');}

@@ -40,6 +40,7 @@ def valid_cookie(header):
     return False
 
 FONT = open(os.path.join(BASE, "vazirmatn.woff2"), "rb").read()
+FONT2 = open(os.path.join(BASE, "aref-ruqaa.woff2"), "rb").read()
 PAGE = open(os.path.join(BASE, "login.html"), encoding="utf-8").read()
 UIJS = open(os.path.join(BASE, "ui.js"), "rb").read()
 PWPAGE = open(os.path.join(BASE, "password.html"), encoding="utf-8").read()
@@ -99,6 +100,8 @@ class H(BaseHTTPRequestHandler):
         if p == "/__sabi/password": return self.page(tpl=PWPAGE)
         if p == "/__sabi/vazirmatn.woff2":
             return self.send(200, FONT, "font/woff2", [("Cache-Control", "public, max-age=31536000, immutable")])
+        if p == "/__sabi/aref-ruqaa.woff2":
+            return self.send(200, FONT2, "font/woff2", [("Cache-Control", "public, max-age=31536000, immutable")])
         if p == "/__sabi/logout":
             return self.send(302, b"", extra=[("Location", "/__sabi/login"),
                 ("Set-Cookie", f"{COOKIE}=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Lax")])

@@ -74,3 +74,9 @@ Deployed to `kitesurf-shared` (etag `8cf772f5c4a5…`), live-verified with 10 ch
 ### Brand spelling
 - The Persian spelling is «صابی»; corrected in the UI, the Firefox pages and the docs.
 
+## ۲۰ نوامبر ۲۰۲۶ — طراحی «رصدخانه» (Observatory)
+
+- **صابی ابری** (`kitesurf-shared`): رابط کاملاً بازطراحی شد؛ اسطرلاب متحرک، آسمان ستاره‌ای تعاملی، تم تیره/روشن، پنج رنگ تأکید، پالت فرمان (`Ctrl/⌘+K` یا `/`)، سایت‌های اخیر، تاریخ و ساعت شمسی، نوار سه دروازه و کارت‌های معرفی. فونت عنوان: Aref Ruqaa (مسیر `/fonts/aref-ruqaa.woff2`).
+- **مرورگر مجازی** (`sabi-virtual`): همان لایهٔ طراحی روی رابط موجود؛ `server.mjs` مسیر فونت جدید را سرو می‌کند و `Dockerfile` فایل فونت را کپی می‌کند. تست دود (`smoke.py`) پس از استقرار موفق بود.
+- **فایرفاکس** (`sabi-firefox`): صفحه‌های ورود و تغییر رمز بازطراحی شدند (نمایشگر قدرت رمز، نمایش/پنهان‌کردن رمز، پیوند نسخه‌ها)؛ دکمهٔ ری‌استارت با همان هویت رنگی؛ `auth.py` مسیر `/__sabi/aref-ruqaa.woff2` را سرو می‌کند. پشتیبان فایل‌های قبلی روی سرور: `/opt/sabi-fx/backup-pre-design`.
+- منبع طراحی: `app/design/` (CSS و قطعه‌های HTML/JS و `build.py`). پورت SSH فقط برای نگهداری باز و دوباره بسته شد.

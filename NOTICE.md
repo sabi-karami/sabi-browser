@@ -8,3 +8,5 @@
 | Chrome DevTools frontend | BSD (Chromium) | Served by the private engine only; pinned build per `engine/devtools_frontend.BUILD`. |
 
 Everything else in this repository: MIT (see `LICENSE`).
+
+- **Aref Ruqaa** (display font, `app/aref-ruqaa.woff2`, `aws-virtual/aref-ruqaa.woff2`, `firefox/aref-ruqaa.woff2`) — © The Aref Ruqaa Project Authors, SIL Open Font License 1.1 (https://github.com/alif-type/aref-ruqaa). Used for headings only; the full OFL text is in `app/OFL.txt`.
