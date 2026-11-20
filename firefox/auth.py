@@ -36,6 +36,7 @@ def valid_cookie(header):
 
 FONT = open(os.path.join(BASE, "vazirmatn.woff2"), "rb").read()
 PAGE = open(os.path.join(BASE, "login.html"), encoding="utf-8").read()
+PWPAGE = open(os.path.join(BASE, "password.html"), encoding="utf-8").read()
 
 class H(BaseHTTPRequestHandler):
     server_version = "sabi-gate"
@@ -51,9 +52,10 @@ class H(BaseHTTPRequestHandler):
         for k, v in extra: self.send_header(k, v)
         self.end_headers()
         if self.command != "HEAD": self.wfile.write(body)
-    def page(self, code=200, error=""):
+    def page(self, code=200, error="", ok="", tpl=None):
         err = f'<p class="err" role="alert">{html.escape(error)}</p>' if error else ""
-        body = PAGE.replace("<!--ERR-->", err).encode()
+        if ok: err = f'<p class="ok" role="status">{html.escape(ok)}</p>'
+        body = (tpl or PAGE).replace("<!--ERR-->", err).encode()
         self.send(code, body, extra=[
             ("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src 'self'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; base-uri 'none'"),
             ("X-Frame-Options", "DENY"), ("X-Content-Type-Options", "nosniff"), ("Referrer-Policy", "no-referrer"),
@@ -65,6 +67,7 @@ class H(BaseHTTPRequestHandler):
             if valid_cookie(self.headers.get("Cookie")): return self.send(204)
             return self.send(302, b"", extra=[("Location", "/__sabi/login")])
         if p == "/__sabi/login": return self.page()
+        if p == "/__sabi/password": return self.page(tpl=PWPAGE)
         if p == "/__sabi/vazirmatn.woff2":
             return self.send(200, FONT, "font/woff2", [("Cache-Control", "public, max-age=31536000, immutable")])
         if p == "/__sabi/logout":
@@ -72,6 +75,7 @@ class H(BaseHTTPRequestHandler):
                 ("Set-Cookie", f"{COOKIE}=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Lax")])
         self.send(404, b"not found", "text/plain")
     def do_POST(self):
+        if self.path.split("?")[0] == "/__sabi/password": return self.change_password()
         if self.path.split("?")[0] != "/__sabi/login": return self.send(404, b"not found", "text/plain")
         n = min(int(self.headers.get("Content-Length") or 0), 2048)
         pw = (parse_qs(self.rfile.read(n).decode(errors="ignore")).get("password") or [""])[0]
@@ -92,6 +96,36 @@ class H(BaseHTTPRequestHandler):
         with lock: fails.setdefault(ip, []).append(now)
         time.sleep(0.6)
         self.page(401, "رمز عبور درست نیست.")
+
+def change_password(self):
+    n = min(int(self.headers.get("Content-Length") or 0), 4096)
+    f = parse_qs(self.rfile.read(n).decode(errors="ignore"))
+    cur, new, rep = [(f.get(k) or [""])[0] for k in ("current", "new", "confirm")]
+    ip, now = self.ip(), time.time()
+    with lock:
+        for k in list(fails):
+            fails[k] = [t for t in fails[k] if now - t < WINDOW]
+            if not fails[k]: del fails[k]
+        if len(fails.get(ip, [])) >= MAX_FAILS or sum(len(v) for v in fails.values()) >= 40:
+            return self.page(429, "تعداد تلاش‌های ناموفق زیاد بود. چند دقیقه بعد دوباره امتحان کنید.", tpl=PWPAGE)
+    c = conf()
+    if not check_password(cur, c):
+        with lock: fails.setdefault(ip, []).append(now)
+        time.sleep(0.6)
+        return self.page(401, "رمز فعلی درست نیست.", tpl=PWPAGE)
+    if new != rep: return self.page(400, "رمز جدید و تکرار آن یکسان نیستند.", tpl=PWPAGE)
+    if not 10 <= len(new) <= 128: return self.page(400, "رمز جدید باید بین ۱۰ تا ۱۲۸ نویسه باشد.", tpl=PWPAGE)
+    if new == cur: return self.page(400, "رمز جدید باید با رمز فعلی فرق داشته باشد.", tpl=PWPAGE)
+    salt = secrets.token_bytes(16)
+    h = hashlib.scrypt(new.encode(), salt=salt, n=2**14, r=8, p=1, dklen=32)
+    data = json.dumps({"salt": salt.hex(), "hash": h.hex(), "secret": c["secret"]})
+    with lock:
+        with open(CONF, "r+") as fh:
+            fh.seek(0); fh.truncate(); fh.write(data); fh.flush(); os.fsync(fh.fileno())
+        fails.pop(ip, None)
+    self.page(200, ok="رمز با موفقیت تغییر کرد. همهٔ نشست‌های قبلی خارج شدند؛ با رمز جدید وارد شوید.", tpl=PWPAGE)
+
+H.change_password = change_password
 
 if __name__ == "__main__":
     ThreadingHTTPServer(("127.0.0.1", 9100), H).serve_forever()
