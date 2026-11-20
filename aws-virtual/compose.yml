@@ -1,0 +1,53 @@
+services:
+  browser:
+    build: .
+    restart: unless-stopped
+    init: true
+    cap_drop: [ALL]
+    security_opt:
+      - seccomp=./chromium-seccomp.json
+      - no-new-privileges:true
+    shm_size: 256m
+    read_only: true
+    environment:
+      HOME: /tmp
+      XDG_CACHE_HOME: /tmp
+      XDG_CONFIG_HOME: /tmp
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    tmpfs:
+      - /tmp:mode=1777,size=384m
+    mem_limit: 1120m
+    pids_limit: 300
+    networks:
+      isolated:
+        ipv4_address: 172.29.63.2
+  egress:
+    image: python:3.13-slim
+    command: ["python", "-B", "/srv/egress.py"]
+    restart: unless-stopped
+    user: "65532:65532"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true
+    mem_limit: 128m
+    pids_limit: 100
+    environment:
+      SABI_DENY_IPS: ${SABI_DENY_IPS:-}
+    volumes:
+      - ./egress.py:/srv/egress.py:ro
+    networks:
+      isolated:
+        ipv4_address: 172.29.63.3
+      public:
+        gw_priority: 1
+networks:
+  isolated:
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.name: sabi-private
+    ipam:
+      config:
+        - subnet: 172.29.63.0/28
+  public:
+    driver_opts:
+      com.docker.network.bridge.name: sabi-egress
