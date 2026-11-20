@@ -9,4 +9,4 @@
 
 Everything else in this repository: MIT (see `LICENSE`).
 
-- **Aref Ruqaa** (display font, `app/aref-ruqaa.woff2`, `aws-virtual/aref-ruqaa.woff2`, `firefox/aref-ruqaa.woff2`) — © The Aref Ruqaa Project Authors, SIL Open Font License 1.1 (https://github.com/alif-type/aref-ruqaa). Used for headings only; the full OFL text is in `app/OFL.txt`.
+- **Estedad** (display and body font, `app/estedad.woff2`, `aws-virtual/estedad.woff2`, `firefox/estedad.woff2`) — Copyright 2022 The Estedad Project Authors (https://github.com/aminabedi68/Estedad), SIL Open Font License 1.1 (https://github.com/aminabedi68/Estedad). The full OFL text is in `app/OFL-Estedad.txt`. Aref Ruqaa, used in the first design iteration, was removed.
