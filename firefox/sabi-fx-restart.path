@@ -1,0 +1,7 @@
+[Unit]
+Description=Watch for a Firefox restart request from the gate
+[Path]
+PathExists=/opt/sabi-fx/run/restart-request
+Unit=sabi-fx-restart.service
+[Install]
+WantedBy=multi-user.target

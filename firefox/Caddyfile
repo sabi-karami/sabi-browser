@@ -8,6 +8,16 @@ firefox.nikanesalamat.ir {
   handle @gate {
     reverse_proxy 127.0.0.1:9100
   }
+  @root path /
+  handle @root {
+    forward_auth 127.0.0.1:9100 {
+      uri /__sabi/verify
+    }
+    rewrite * /__sabi/index
+    reverse_proxy 127.0.0.1:9100 {
+      flush_interval -1
+    }
+  }
   handle {
     forward_auth 127.0.0.1:9100 {
       uri /__sabi/verify

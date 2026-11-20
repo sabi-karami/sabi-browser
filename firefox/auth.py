@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Sabi Firefox gate: Persian login page + signed-cookie verification for Caddy forward_auth."""
-import base64, hashlib, hmac, html, json, os, secrets, time, threading
+import base64, hashlib, hmac, html, json, os, secrets, time, threading, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs
 
@@ -10,6 +10,11 @@ COOKIE = "sabi_fx"
 TTL = 7 * 24 * 3600
 MAX_FAILS, WINDOW = 5, 600
 fails, lock = {}, threading.Lock()
+UPSTREAM = "http://172.29.64.2:3000"
+RUN = os.path.join(BASE, "run")
+REQ = os.path.join(RUN, "restart-request")
+ORIGIN = "https://firefox.nikanesalamat.ir"
+state = {"started": 0.0}
 
 def conf():
     with open(CONF) as f: return json.load(f)
@@ -36,6 +41,7 @@ def valid_cookie(header):
 
 FONT = open(os.path.join(BASE, "vazirmatn.woff2"), "rb").read()
 PAGE = open(os.path.join(BASE, "login.html"), encoding="utf-8").read()
+UIJS = open(os.path.join(BASE, "ui.js"), "rb").read()
 PWPAGE = open(os.path.join(BASE, "password.html"), encoding="utf-8").read()
 
 class H(BaseHTTPRequestHandler):
@@ -66,6 +72,29 @@ class H(BaseHTTPRequestHandler):
         if p == "/__sabi/verify":
             if valid_cookie(self.headers.get("Cookie")): return self.send(204)
             return self.send(302, b"", extra=[("Location", "/__sabi/login")])
+        if p == "/__sabi/ui.js":
+            return self.send(200, UIJS, "application/javascript; charset=utf-8")
+        if p == "/__sabi/index":
+            if not valid_cookie(self.headers.get("Cookie")):
+                return self.send(302, b"", extra=[("Location", "/__sabi/login")])
+            try:
+                with urllib.request.urlopen(UPSTREAM + "/", timeout=8) as r: body = r.read().decode("utf-8", "replace")
+            except Exception:
+                return self.send(503, "<!doctype html><meta charset=utf-8><meta http-equiv=refresh content=3><body dir=rtl style='font-family:sans-serif;background:#15122b;color:#fff;display:grid;place-items:center;height:100vh'>فایرفاکس در حال راه‌اندازی است…".encode())
+            tag = '<script src="/__sabi/ui.js" defer></script>'
+            body = body.replace("</body>", tag + "</body>", 1) if "</body>" in body else body + tag
+            return self.send(200, body.encode())
+        if p == "/__sabi/status":
+            if not valid_cookie(self.headers.get("Cookie")): return self.send(401, b"{}", "application/json")
+            ok = False
+            try: done = os.path.getmtime(os.path.join(RUN, "restart-done"))
+            except OSError: done = 0
+            idle = state["started"] == 0 or (done >= state["started"] and time.time() - done > 4)
+            if not os.path.exists(REQ) and idle:
+                try:
+                    with urllib.request.urlopen(UPSTREAM + "/", timeout=3) as r: ok = r.status == 200
+                except Exception: ok = False
+            return self.send(200, json.dumps({"ready": ok}).encode(), "application/json")
         if p == "/__sabi/login": return self.page()
         if p == "/__sabi/password": return self.page(tpl=PWPAGE)
         if p == "/__sabi/vazirmatn.woff2":
@@ -76,6 +105,7 @@ class H(BaseHTTPRequestHandler):
         self.send(404, b"not found", "text/plain")
     def do_POST(self):
         if self.path.split("?")[0] == "/__sabi/password": return self.change_password()
+        if self.path.split("?")[0] == "/__sabi/restart": return self.restart()
         if self.path.split("?")[0] != "/__sabi/login": return self.send(404, b"not found", "text/plain")
         n = min(int(self.headers.get("Content-Length") or 0), 2048)
         pw = (parse_qs(self.rfile.read(n).decode(errors="ignore")).get("password") or [""])[0]
@@ -126,6 +156,24 @@ def change_password(self):
     self.page(200, ok="رمز با موفقیت تغییر کرد. همهٔ نشست‌های قبلی خارج شدند؛ با رمز جدید وارد شوید.", tpl=PWPAGE)
 
 H.change_password = change_password
+
+def restart(self):
+    js = [("Content-Type", "application/json")]
+    if not valid_cookie(self.headers.get("Cookie")): return self.send(401, b'{"error":"auth"}', "application/json")
+    org = self.headers.get("Origin")
+    if self.headers.get("X-Sabi-Action") != "restart" or (org and org != ORIGIN):
+        return self.send(403, b'{"error":"forbidden"}', "application/json")
+    with lock:
+        if time.time() - state["started"] < 20:
+            return self.send(429, b'{"error":"busy"}', "application/json")
+        state["started"] = time.time()
+    try:
+        with open(REQ, "w") as f: f.write(str(int(time.time())))
+    except Exception:
+        return self.send(500, b'{"error":"failed"}', "application/json")
+    self.send(202, b'{"restarting":true}', "application/json")
+
+H.restart = restart
 
 if __name__ == "__main__":
     ThreadingHTTPServer(("127.0.0.1", 9100), H).serve_forever()
