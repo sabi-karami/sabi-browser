@@ -1,7 +1,7 @@
 (function(){
 if(window.__sabiRestart)return;window.__sabiRestart=1;
 var css=document.createElement('style');
-css.textContent='@font-face{font-family:SabiV;src:url(/__sabi/vazirmatn.woff2) format("woff2");font-weight:100 900}@font-face{font-family:SabiR;src:url(/__sabi/aref-ruqaa.woff2) format("woff2");font-weight:700}'+
+css.textContent='@font-face{font-family:SabiV;src:url(/__sabi/estedad.woff2) format("woff2");font-weight:100 900}'+
 '#sabi-rs,#sabi-rs *{box-sizing:border-box;font-family:SabiV,system-ui,sans-serif}'+
 '#sabi-rs-btn{position:fixed;z-index:2147483000;right:14px;bottom:14px;display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid rgba(255,194,77,.5);border-radius:999px;background:rgba(9,10,32,.86);color:#ffe9b8;font-size:13.5px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);opacity:.45;transition:opacity .15s,transform .15s,background .15s;direction:rtl}'+
 '#sabi-rs-btn:hover,#sabi-rs-btn:focus-visible{opacity:1;background:rgba(22,20,58,.97);border-color:#ffc24d;box-shadow:0 0 24px rgba(255,176,59,.35);transform:translateY(-1px)}'+
@@ -9,7 +9,7 @@ css.textContent='@font-face{font-family:SabiV;src:url(/__sabi/vazirmatn.woff2) f
 '#sabi-rs-ov{position:fixed;inset:0;z-index:2147483001;display:none;place-items:center;background:rgba(4,5,17,.74);backdrop-filter:blur(7px);direction:rtl}'+
 '#sabi-rs-ov.on{display:grid}'+
 '#sabi-rs-card{width:min(380px,92vw);padding:28px 24px 22px;border-radius:24px;background:#0a0c26;border:1px solid rgba(255,194,77,.4);color:#f7f1e3;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 70px -25px rgba(255,176,59,.5)}'+
-'#sabi-rs-card h2{margin:0 0 8px;font:700 28px/1.5 SabiR,SabiV,serif;color:#ffc24d}#sabi-rs-card p{margin:0 0 20px;font-size:14px;line-height:1.9;color:#c6c2dc}'+
+'#sabi-rs-card h2{margin:0 0 8px;font:800 28px/1.5 SabiV,sans-serif;color:#ffc24d}#sabi-rs-card p{margin:0 0 20px;font-size:14px;line-height:1.9;color:#c6c2dc}'+
 '#sabi-rs-card .row{display:flex;gap:10px}#sabi-rs-card button{flex:1;height:44px;border-radius:12px;border:1px solid rgba(243,230,200,.25);background:transparent;color:#f7f1e3;font-size:15px;font-weight:600;cursor:pointer}'+
 '#sabi-rs-card button.go{border:0;color:#1a1200;background:linear-gradient(120deg,#ffd37a,#ffb03b 55%,#ff9d3d)}'+
 '#sabi-rs-spin{width:46px;height:46px;margin:0 auto 16px;border-radius:50%;border:4px solid rgba(255,255,255,.14);border-top-color:#ffc24d;animation:sabirs 1s linear infinite}'+

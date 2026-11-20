@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Deploy the Sabi Browser main worker (kitesurf-shared) from a directory containing
-worker.mjs, ui.html, vazirmatn.woff2, aref-ruqaa.woff2.
+worker.mjs, ui.html, vazirmatn.woff2, estedad.woff2.
 Auth: set CLOUDFLARE_API_TOKEN (Workers Scripts:Edit); in 3B chat the connector injects it.
 Usage: python3 deploy.py [dir]   # dir defaults to .
 """
@@ -26,7 +26,7 @@ body=b''.join([part('metadata','application/json',json.dumps(meta).encode()),
  part('worker.mjs','application/javascript+module',rd('worker.mjs')),
  part('ui.html','text/plain',rd('ui.html')),
  part('vazirmatn.woff2','application/octet-stream',rd('vazirmatn.woff2')),
- part('aref-ruqaa.woff2','application/octet-stream',rd('aref-ruqaa.woff2'))])+f'--{b}--\r\n'.encode()
+ part('estedad.woff2','application/octet-stream',rd('estedad.woff2'))])+f'--{b}--\r\n'.encode()
 r=api('PUT',f'/accounts/{acct}/workers/scripts/{S}',body,{'Content-Type':'multipart/form-data; boundary='+b})
 print('upload success:',r.get('success'),r.get('errors') or r.get('body'))
 if r.get('success'):
