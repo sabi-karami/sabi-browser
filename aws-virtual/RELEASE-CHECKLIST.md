@@ -1,0 +1,11 @@
+# AWS virtual browser — release checklist
+
+Current gate: the AWS connector identity has an explicit deny on Lightsail provisioning and configuration in `us-east-1`. Do not attempt another provisioning route to bypass an organizational restriction. An AWS administrator must authorize the named deployment or provision and manage the dedicated host directly.
+
+1. Confirm that `sabi-virtual-browser` is the only target and that the Lightsail `small_3_0` Linux/IPv4 plan is acceptable (observed price $12/month; verify billing, taxes and transfer first). Confirm both provisioning and cleanup permissions. Do not grant broad administrator access.
+2. Provision Ubuntu 24.04 on the approved dedicated instance. Disable instance metadata for the host and verify the setting. Configure only TCP 80/443 for public access; restrict or close management access. Use stable DNS and only change the new `sabi-virtual.nikanesalamat.ir` record. Do not alter the original Sabi DNS, Worker, or engine.
+3. Deploy the committed files using `bootstrap.sh`; install the outbound firewall before starting containers. Verify real Chromium starts with its sandbox and that Docker has not exposed internal service ports. Do not disable sandboxing to get launch working.
+4. Verify that the browser can navigate public HTTPS but not access host, local, private or metadata addresses, including through normal redirects. Review resource limits and confirm expiry removes browser processes. Verify TLS, start rate limiting and view-link isolation.
+5. Run `python3 smoke.py`. Manually verify two controller/viewer devices, QR links, mobile touch, full screen, screenshots, inspector panes and clean session expiry. The provided smoke test uses a public example domain only and closes its test session.
+6. After successful smoke and manual tests, add a clearly labelled “مرورگر مجازی” link to the existing Sabi header pointing to `https://sabi-virtual.nikanesalamat.ir/`. This is a link only: keep original routing and browser runs unchanged. Verify both independent sites. Do not publish the entry link before the new site works.
+7. If tests fail, leave the entry link unpublished. Revert changes on the dedicated host or remove unneeded resources through the administrator; stopping a Lightsail instance does not necessarily stop its fixed plan charges.
