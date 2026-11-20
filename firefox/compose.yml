@@ -1,0 +1,38 @@
+services:
+  firefox:
+    image: sabi-firefox:local
+    build: .
+    container_name: sabi-firefox
+    restart: unless-stopped
+    init: false
+    security_opt:
+      - seccomp=./chromium-seccomp.json
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETUID, SETGID, KILL, SYS_CHROOT, FSETID, MKNOD, NET_BIND_SERVICE, SETPCAP, AUDIT_WRITE]
+    shm_size: 1gb
+    mem_limit: 1500m
+    memswap_limit: 3000m
+    pids_limit: 1500
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: America/New_York
+      TITLE: Firefox
+      LC_ALL: en_US.UTF-8
+      SELKIES_ENABLE_BASIC_AUTH: "false"
+    dns: [1.1.1.1, 8.8.8.8]
+    volumes:
+      - fx-config:/config
+    networks:
+      fx:
+        ipv4_address: 172.29.64.2
+volumes:
+  fx-config:
+networks:
+  fx:
+    driver_opts:
+      com.docker.network.bridge.name: sabi-fx
+    ipam:
+      config:
+        - subnet: 172.29.64.0/28

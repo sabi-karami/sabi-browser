@@ -1,0 +1,9 @@
+[Unit]
+Description=Update Firefox image to the latest release
+Requires=docker.service
+After=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/sabi-fx
+EnvironmentFile=-/opt/sabi-fx/.env
+ExecStart=/opt/sabi-fx/update.sh
