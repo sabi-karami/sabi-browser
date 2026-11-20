@@ -18,3 +18,8 @@ Status: deployed and published. Host: Lightsail instance `sabi-virtual`, region 
 - Limits: 2 concurrent sessions, 6 session starts per client IP per hour, 30 per hour in total. Only one browser launch runs at a time, so a simultaneous second start can receive 429 for a few seconds.
 - Stopping a Lightsail instance does not stop its plan charges; delete the instance and release the static IP to stop billing.
 - To remove the entry link, revert the "مرورگر مجازی" anchor in `app/ui.html` and redeploy the original Worker.
+
+## Clipboard and location
+- Paste: `kind: paste` (up to 16,000 characters, inserted in 2,000-character chunks). The UI offers a paste button, accepts Ctrl+V on the page, and the text box sends through the same path. Action bodies are limited to 96 KB; other bodies stay at 4 KB.
+- Copy out: `POST /api/copy` (controller only) returns the current selection (or the selected range of the focused text field) so the UI can place it on the visitor's clipboard.
+- Location: the browser context uses `en-US` and `America/New_York`, matching the host's real address (Columbus, Ohio, AWS us-east-2). `GET /api/where` looks the host's exit address up through the egress proxy (ipinfo.io), caches it for six hours, and the header badge displays the real result. If the host ever moves, update the locale and time zone constants in `server.mjs`.

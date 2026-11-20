@@ -9,6 +9,14 @@ export function publicUrl(raw) {
     return u.href;
   } catch {return null;}
 }
+export function cleanPaste(raw){
+  if(typeof raw!=='string')return '';
+  return raw.replace(/\r\n?/g,'\n').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'').replace(/[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/g,'');
+}
+export function pasteChunks(text,size=2000){
+  const out=[];for(let i=0;i<text.length;){let end=Math.min(text.length,i+size);const last=text.charCodeAt(end-1);if(end<text.length&&last>=0xd800&&last<=0xdbff)end--;out.push(text.slice(i,end));i=end;}return out;
+}
+export const PASTE_MAX=16000;
 export async function control(session,m){
     const send=(method,params)=>session.cdp.send(method,params);
     const bounded=(v,min,max)=>typeof v==='number'&&Number.isFinite(v)?Math.max(min,Math.min(max,Math.round(v))):0;
@@ -24,6 +32,7 @@ export async function control(session,m){
       return send('Input.dispatchMouseEvent',{...point,type,button:type==='mouseMoved'?'none':'left',buttons,clickCount:1});
     }
     if(m.kind==='wheel')return send('Input.dispatchMouseEvent',{...point,type:'mouseWheel',deltaX:bounded(m.dx,-1100,1100),deltaY:bounded(m.dy,-1100,1100)});
+    if(m.kind==='paste'){const text=cleanPaste(m.text);if(!text||text.length>PASTE_MAX)throw Error('paste');for(const part of pasteChunks(text))await send('Input.insertText',{text:part});return;}
     if(m.kind==='text'&&typeof m.text==='string'&&m.text.length>0&&m.text.length<=700)return send('Input.insertText',{text:m.text});
     if(m.kind==='key'&&typeof m.key==='string'&&m.key.length>0&&m.key.length<=35){
       const text=typeof m.text==='string'&&m.text.length<=8?m.text:'';const fields={key:m.key,code:typeof m.code==='string'&&m.code.length<40?m.code:'',windowsVirtualKeyCode:bounded(m.vk,0,255),modifiers:point.modifiers};
