@@ -1,0 +1,27 @@
+
+.brand .mark{width:36px;height:36px;flex:none}.brand .mark rect{fill:#0b0d2c!important}
+.astro .a-g{fill:none;stroke:var(--gold);stroke-width:1}
+.astro .a-a{fill:none;stroke:var(--accent);stroke-width:1.2}
+.astro .a-f{fill:var(--gold);stroke:none}
+.astro .a-dev{fill:var(--solid);stroke:var(--accent);stroke-width:1.4}
+.astro .a-dv{fill:none;stroke:var(--text);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.astro .a-core{fill:color-mix(in srgb,var(--accent) 20%,var(--solid));stroke:var(--accent);stroke-width:1.5}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s,transform .8s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}
+#accpop[hidden],.recent[hidden]{display:none}
+.recent .rl{margin-inline-end:2px}.recent .x{border:0;background:transparent;font:11px var(--display);color:var(--hint);text-decoration:underline;min-height:30px}
+body:has(#workspace:not([hidden])) #stars{opacity:.45}
+header.top .h-group .pill{min-height:38px}
+.hero{margin-inline:auto;text-align:center}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+
+:root{--sw1:var(--accent);--sw2:oklch(.5 .17 calc(var(--h) + 70))}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--sw1:var(--gold);--sw2:var(--accent)}}
+:root[data-theme=dark]{--sw1:var(--gold);--sw2:var(--accent)}
+.hero h1 .swash{background-image:linear-gradient(100deg,var(--sw1),var(--sw2) 45%,var(--sw1) 90%);background-size:220% 100%;font-size:1.06em;padding-bottom:.32em;margin-bottom:-.32em}
+.hero h1 .swash svg{bottom:.02em;height:.28em}
+.astro{margin-bottom:-44px;-webkit-mask-image:linear-gradient(#000 60%,transparent 100%);mask-image:linear-gradient(#000 60%,transparent 100%)}
+.greet,.hero .eyebrow{position:relative;z-index:1}
+@media(max-width:560px){.astro{margin-bottom:-34px}}
+.box{position:relative;background:var(--card);border:1.5px solid transparent;animation:none}
+.box::before{display:block!important;content:"";position:absolute;inset:-1.5px;width:auto;height:auto;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang),color-mix(in srgb,var(--accent) 80%,transparent),var(--stroke) 18%,var(--gold) 40%,var(--stroke) 62%,color-mix(in srgb,var(--accent) 80%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:spinb 9s linear infinite}
+@media(prefers-reduced-motion:reduce){.box::before{animation:none}}

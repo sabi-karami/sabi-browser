@@ -1,6 +1,7 @@
 import {DurableObject} from 'cloudflare:workers';
 import UI from './ui.html';
 import FONT from './vazirmatn.woff2';
+import AREF from './aref-ruqaa.woff2';
 const HOST='sabi-browser.nikanesalamat.ir', ORIGIN='https://'+HOST;
 const LIFE=12*60_000, EXTEND=5*60_000, MAXLIFE=30*60_000, WINDOW=60*60_000, LIMIT=3, WIDTH=1280, HEIGHT=720;
 const TXT={'cache-control':'no-store','referrer-policy':'no-referrer','x-content-type-options':'nosniff'};
@@ -34,6 +35,7 @@ export default {async fetch(req,env){
   const u=new URL(req.url);if(u.host!==HOST||u.protocol!=='https:')return response('Not found',404);
   if(req.headers.get('upgrade'))return response('Not found',404);
   if(u.pathname==='/fonts/vazirmatn.woff2'&&req.method==='GET')return response(FONT,200,{'content-type':'font/woff2','cache-control':'public, max-age=31536000, immutable','access-control-allow-origin':ORIGIN});
+  if(u.pathname==='/fonts/aref-ruqaa.woff2'&&req.method==='GET')return response(AREF,200,{'content-type':'font/woff2','cache-control':'public, max-age=31536000, immutable','access-control-allow-origin':ORIGIN});
   if(u.pathname==='/'&&req.method==='GET')return response(UI,200,{'content-type':'text/html; charset=utf-8','permissions-policy':'camera=(), microphone=(), geolocation=(), payment=(), usb=(), display-capture=()','content-security-policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; font-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",'x-frame-options':'DENY'});
   if(u.pathname==='/api/start'&&req.method==='POST'){
     if(!validOrigin(req))return json({error:'Origin not allowed'},403);
