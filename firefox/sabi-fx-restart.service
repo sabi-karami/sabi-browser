@@ -1,0 +1,7 @@
+[Unit]
+Description=Restart the Firefox container
+Requires=docker.service
+After=docker.service
+[Service]
+Type=oneshot
+ExecStart=/opt/sabi-fx/restart-firefox.sh

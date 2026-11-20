@@ -12,4 +12,4 @@ A full, current Firefox (linuxserver/firefox, KasmVNC/Selkies web desktop) on it
 No secrets are stored here. Rotate the password: `sudo python3 /opt/sabi-fx/set-password.py` (prints the new one, logs everybody out).
 Bootstrap on a fresh Ubuntu 24.04: install docker-ce, caddy, python3, set `kernel.apparmor_restrict_unprivileged_userns=0`, copy files to /opt/sabi-fx, create user `sabifx`, `.env` with `SABI_OWN_IP=<public ip>`, enable the units.
 
-Note: compose.yml expects `chromium-seccomp.json` and `vazirmatn.woff2` next to it; copy them from `aws-virtual/` when deploying.
+- Restart button: the gate injects `ui.js` into the Selkies page (floating «ری‌استارت فایرفاکس» button). POST `/__sabi/restart` (cookie + `X-Sabi-Action` header + same-origin check) drops `/opt/sabi-fx/run/restart-request`; `sabi-fx-restart.path` runs `restart-firefox.sh` (root) which does `docker restart sabi-firefox` and touches `restart-done`; `/__sabi/status` reports readiness.
