@@ -1,6 +1,6 @@
 import {DurableObject} from 'cloudflare:workers';
 import UI from './ui.html';
-const HOST='kitesurf-live.nikanesalamat.ir', ORIGIN='https://'+HOST;
+const HOST='sabi-browser.nikanesalamat.ir', ORIGIN='https://'+HOST;
 const LIFE=12*60_000, EXTEND=5*60_000, MAXLIFE=30*60_000, WINDOW=60*60_000, LIMIT=3, WIDTH=1280, HEIGHT=720;
 const TXT={'cache-control':'no-store','referrer-policy':'no-referrer','x-content-type-options':'nosniff'};
 const response=(body,status=200,headers={})=>new Response(body,{status,headers:{...TXT,...headers}});

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Live smoke test for Sabi Browser. Run: python3 smoke.py https://kitesurf-live.nikanesalamat.ir"""
+"""Live smoke test for Sabi Browser. Run: python3 smoke.py https://sabi-browser.nikanesalamat.ir"""
 import hashlib, json, sys, time, urllib.request, urllib.error
 
-BASE = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "https://kitesurf-live.nikanesalamat.ir"
+BASE = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "https://sabi-browser.nikanesalamat.ir"
 UA = {"User-Agent": "Mozilla/5.0 (smoke) Chrome/130.0"}
 
 def req(path, data=None, method=None, extra=None):

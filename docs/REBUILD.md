@@ -16,7 +16,7 @@
 | منبع | نام/مقدار |
 |---|---|
 | ورکر موتور | `kitesurf-upstream` — دامنهٔ `kitesurf.nikanesalamat.ir` |
-| ورکر اپ | `kitesurf-shared` — دامنهٔ `kitesurf-live.nikanesalamat.ir` |
+| ورکر اپ | `kitesurf-shared` — دامنهٔ `sabi-browser.nikanesalamat.ir` |
 | Durable Object | کلاس `SharedTab`، binding `SESSIONS`، migration tag `shared-tab-v1` (SQLite) |
 | Service Binding | `ENGINE` → `kitesurf-upstream` / entrypoint `KitesurfEngine` / env `production` |
 | Access App | hostname `kitesurf.nikanesalamat.ir`، نشست ۱ ساعته، policy: فقط ایمیل مالک (IdP: Cloudflare SSO) |

@@ -11,7 +11,7 @@
 [![Engine](https://img.shields.io/badge/Engine-Cloudflare%20Kitesurf-black?logo=github)](https://github.com/cloudflare/kitesurf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-[**🌐 نسخهٔ زنده**](https://kitesurf-live.nikanesalamat.ir) · [راهنمای بازسازی](docs/REBUILD.md) · [تاریخچهٔ استقرار](docs/DEPLOYMENT-HISTORY.md)
+[**🌐 نسخهٔ زنده**](https://sabi-browser.nikanesalamat.ir) · [راهنمای بازسازی](docs/REBUILD.md) · [تاریخچهٔ استقرار](docs/DEPLOYMENT-HISTORY.md)
 
 </div>
 

@@ -7,7 +7,7 @@
 
 ## Passwordless shared tab
 
-- User-facing URL: https://kitesurf-live.nikanesalamat.ir/ on Worker `kitesurf-shared`; no Cloudflare Access, email, password, or code at this hostname. The original primary Worker and its Access policy were not changed.
+- User-facing URL: https://sabi-browser.nikanesalamat.ir/ on Worker `kitesurf-shared`; no Cloudflare Access, email, password, or code at this hostname. The original primary Worker and its Access policy were not changed.
 - Private upstream Kitesurf engine is used through a Cloudflare Service Binding. Raw CDP routes are not exposed. Shared clients see the same Kitesurf target via a single Durable Object-managed connection.
 - Session link uses a random capability in the URL fragment; the browser sends it in the Authorization header. It is not included in logs, and images/credentials are not persisted by the shared layer. No capabilities saved in the project volume.
 - Lifetime at most 12 minutes; close invalidates it on every client. Public startup quota: at most three simultaneous sessions, twenty starts per rolling hour, five starts per rolling hour per observed IP bucket. Pages, cookies and inputs are not restored after termination.
@@ -45,3 +45,9 @@ Deployed to `kitesurf-shared` (etag `8cf772f5c4a5…`), live-verified with 10 ch
 - **View-only guest link**: `/#v<64hex>`. On start the worker returns `{token, view}` where `view = sha256('view|'+token)`; the DO name is now `sha256('session|'+view)`, so the control role derives the view hash first and the view role maps directly. A viewer presenting the view token as control resolves to a non-existent DO (410); the worker also gates the `view` role (`x-kitesurf-role: view`) to `/api/frame` only (403 otherwise). Control clients compute the view link locally with WebCrypto — tokens never leave the browser. UI: eye button copies the view link, QR dialog has control/view tabs, view mode hides all control affordances (`.workspace.view .ctl`), shows a “فقط تماشا” badge, and disables pointer/keyboard/paste senders. Note: sessions that were alive during this deploy were dropped by the DO-naming change (12-minute lifetime, acceptable).
 - **Touch scroll**: on touch pointers, dragging the screen sends batched wheel deltas (scaled to frame pixels) instead of mouse drags, and a tap sends a click — mobile pages now scroll naturally. Mouse behaviour (drag-select etc.) unchanged; wheel batching refactored into `queueWheel`.
 - Artifacts: `shared/viewonly-deploy.json`, preview `shared/viewonly-workspace.png` (dark, view mode).
+
+### Domain move (2026-11-20)
+
+- App now served at https://sabi-browser.nikanesalamat.ir/ (worker domain id `205f60d6beb601680b7c416a31bf71f351dca4a8`); `HOST` constant updated and redeployed (etag `f77afdac5db1…`), smoke-tested on the new origin.
+- Old hostname `kitesurf-live.nikanesalamat.ir` fully removed (workers custom domain + DNS); confirmed dead.
+- Engine hostname `kitesurf.nikanesalamat.ir` kept: it is in use as the owner-only, Access-protected DevTools entry and is documented in the repo.
