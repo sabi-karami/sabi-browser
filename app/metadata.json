@@ -1,0 +1,29 @@
+{
+  "main_module": "worker.mjs",
+  "compatibility_date": "2026-09-11",
+  "compatibility_flags": [
+    "global_fetch_strictly_public"
+  ],
+  "bindings": [
+    {
+      "type": "durable_object_namespace",
+      "name": "SESSIONS",
+      "class_name": "SharedTab"
+    },
+    {
+      "type": "service",
+      "name": "ENGINE",
+      "service": "kitesurf-upstream",
+      "environment": "production",
+      "entrypoint": "KitesurfEngine"
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "redact_query_string": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false
+    }
+  }
+}

@@ -1,0 +1,3 @@
+Repository: https://github.com/cloudflare/kitesurf
+Commit: 01d22668179931e9d0ba086fbaba96ebb7e7630a
+Archive SHA-256: b475ff1a6b21e91a7b5a2fd3abcfa1d572b79af9cf9d9dc5f263cf7c8c6cd458

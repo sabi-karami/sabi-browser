@@ -1,0 +1,55 @@
+{
+  "index": "sha256:ea0f4459d6e268c3cdd4d511423cf3f413d803e7edb0a63a62e2fae2f5223244",
+  "amd64": "sha256:a73cea8aaf73f754ff6767110712caf13bfab63baaf5004c9fdf0a41613cd74b",
+  "manifest": {
+    "schemaVersion": 2,
+    "mediaType": "application/vnd.oci.image.manifest.v1+json",
+    "config": {
+      "mediaType": "application/vnd.oci.image.config.v1+json",
+      "digest": "sha256:65794ea0aea65fd6d55f3f348c2365504a4921d3b2c9a0d3cee72a744a379b90",
+      "size": 4571
+    },
+    "layers": [
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:dd051e1b8c92ff101fa3071ab97ea4924885942f15644e01c3dc095764e863e3",
+        "size": 28247982
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:4f6cedd8d7a062ae8781a1482cbe892b0cd2e60dee267bd1274f3e989447d76c",
+        "size": 5544980
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:819ac872a6af92d775e4415d050ab7ebbbc6727239e7b58d67b9c5af2ff5fdfe",
+        "size": 7802
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:7f59b3dd929e8bd1b87530fc2c49385db2e910c8ad52723ffd3064780cc3e219",
+        "size": 15056
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:8c8f484a15de3446322bd3cc6b23511275e6f7b02260c01d86ef8d744638871a",
+        "size": 39437462
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:04474cf8d5e3744d93d7b87a1f6e846db7b7437a53ebca0244b8474e21715c69",
+        "size": 39774471
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:971ab5815c3290b8c0a5f24d20eaae819287601328c9d4f00dcdb1cbd17df932",
+        "size": 3453
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1",
+        "size": 32
+      }
+    ]
+  }
+}
